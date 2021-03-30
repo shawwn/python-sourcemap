@@ -190,7 +190,7 @@ def encode(sourcemap):
             'mappings': ';'.join(map(','.join, mappings)),
             'sources': sorted(sources, key=lambda x: sources[x]),
             'names': sorted(names, key=lambda x: names[x])}
-    data['sourcesContent'] = map(sourcemap.sources_content.get, data['sources'])
+    data['sourcesContent'] = list(map(sourcemap.sources_content.get, data['sources']))
     return json.dumps(data)
 
 source_map_url_re = re.compile(r'/[\*/][#@]\s*sourceMappingURL=([^\s*]+)\s*(?:\*/)?')
@@ -268,7 +268,8 @@ class SourceMap(object):
         self.sources_content = {} if sources_content is None else sources_content.copy()
         self.raw = {} if raw is None else raw.copy()
         self.ignore_errors = ignore_errors
-        map(self.add_token, tokens)
+        for token in tokens:
+          self.add_token(token)
 
     def add_token(self, token):
         if not self.tokens or token[:2] > self.tokens[-1][:2]:
